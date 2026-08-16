@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SSC Mock Master V5 — Multi Platform Alias OCR</title>
+<style>
+:root{
+--bg:#f4f6f8;--card:#fff;--ink:#17202a;--muted:#667085;--line:#d8dee7;
+--red:#9d1c1c;--red2:#c83a2d;--green:#16834b;--blue:#2563eb;--orange:#b66b00;
+--shadow:0 7px 24px #10182812;--input:#fff;--headbg:#eef1f4;--subbg:#f8f9fb;
+--soft:#eef2f6;--softink:#344054;--drop:#fafbfc
+}
+body.dark-mode{
+--bg:#101418;--card:#181d23;--ink:#edf2f7;--muted:#9aa6b2;--line:#303944;
+--shadow:0 7px 24px #0008;--input:#20262e;--headbg:#252c35;--subbg:#1d232b;
+--soft:#252c35;--softink:#e5e7eb;--drop:#151a20
+}
+body.dark-mode header{box-shadow:0 3px 15px #0008}
+body.dark-mode input,body.dark-mode select,body.dark-mode textarea{background:var(--input);color:var(--ink);border-color:#46515e}
+body.dark-mode .tablewrap,body.dark-mode .card,body.dark-mode .panel,body.dark-mode .subject,body.dark-mode .stat,.dark-mode .ocrbox{background:var(--card);border-color:var(--line)}
+body.dark-mode th{background:var(--headbg);color:var(--ink)}
+body.dark-mode .sub{background:var(--subbg)}
+body.dark-mode .group{background:#2b333d}
+body.dark-mode .soft{background:var(--soft);color:var(--softink)}
+body.dark-mode .drop{background:var(--drop);border-color:#4b5663}
+body.dark-mode .notice{background:#2b2516;border-color:#6b5725;color:#f4df9a}
+body.dark-mode .metric,.dark-mode .zone{border-color:#2b333d}
+body.dark-mode .progress{background:#2b333d}
+body.dark-mode .pie:after{background:var(--card)}
+body.dark-mode .key-score{background:#182d49!important;color:#8ebcff}
+body.dark-mode .key-percentile{background:#302044!important;color:#d2a9ff}
+body.dark-mode .key-accuracy{background:#173526!important;color:#7ee0a8}
+body.dark-mode .key-header-score{background:#213957!important;color:#9bc4ff!important}
+body.dark-mode .key-header-percentile{background:#3b2b50!important;color:#d8b8ff!important}
+body.dark-mode .key-header-accuracy{background:#204631!important;color:#94e7b7!important}
+body.dark-mode .mock-score-deep{background:#173b68!important;color:#b8d7ff!important}
+body.dark-mode .mock-percentile-deep{background:#422a5d!important;color:#e0c7ff!important}
+body.dark-mode .mock-accuracy-deep{background:#174b31!important;color:#a5efc5!important}
+body.dark-mode .subject-strong{background:#174b31!important;border-color:#45c77d!important}
+body.dark-mode .subject-weak{background:#5a2523!important;border-color:#ff7d73!important}
+body.dark-mode .analysis-score{background:#173b68!important;color:#b8d7ff!important}
+body.dark-mode .analysis-percentile{background:#422a5d!important;color:#e0c7ff!important}
+body.dark-mode .analysis-attempt{background:#123d57!important;color:#a9ddff!important}
+body.dark-mode .analysis-accuracy{background:#174b31!important;color:#a5efc5!important}
+body.dark-mode .empty{color:var(--muted)}
+body.dark-mode footer{color:var(--muted)}
+
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:linear-gradient(135deg,#871717,#c53b2b);color:#fff;padding:20px 24px;position:sticky;top:0;z-index:20;box-shadow:0 3px 15px #0002}
+.head{max-width:1650px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:18px}h1{margin:0;font-size:24px}.sub{font-size:13px;opacity:.9;margin-top:4px}.actions{display:flex;gap:8px;flex-wrap:wrap}
+button{border:0;border-radius:8px;padding:9px 13px;font-weight:700;cursor:pointer}.white{background:#fff;color:#8d1717}.dark{background:#0003;color:#fff;border:1px solid #fff4}.red{background:var(--red);color:#fff}.soft{background:#eef2f6;color:#344054}.danger{background:#fee4e2;color:#b42318}
+main{max-width:1650px;margin:20px auto;padding:0 15px}.card{background:var(--card);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);padding:17px;margin-bottom:18px}.headrow{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:13px}.card h2{font-size:18px;margin:0}.muted{font-size:12px;color:var(--muted)}
+.settings{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}.field label{font-size:11px;color:var(--muted);font-weight:800;display:block;margin-bottom:4px}.field input,.field select{width:100%}
+input,select,textarea{font:inherit;border:1px solid #cfd6df;border-radius:7px;padding:8px;background:var(--input);color:var(--ink)}input:focus,select:focus,textarea:focus{outline:2px solid #9d1c1c22;border-color:#9d1c1c}
+.drop{border:2px dashed #b8c1cc;border-radius:12px;padding:26px;text-align:center;background:#fafbfc;cursor:pointer}.drop:hover,.drop.drag{border-color:var(--red);background:#fff8f7}.drop strong{display:block;font-size:16px;margin-bottom:5px}.drop small{color:var(--muted)}
+.importgrid{display:grid;grid-template-columns:300px 1fr;gap:14px;margin-top:14px}.ocrbox{border:1px solid var(--line);border-radius:10px;padding:12px}.ocrbox textarea{width:100%;min-height:180px}.detgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.detgrid label{font-size:10px;color:var(--muted);font-weight:700}.detgrid input{width:100%;margin-top:2px}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:9px}table{border-collapse:collapse;width:100%;min-width:2200px;font-size:11px}th,td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px;text-align:center}th:last-child,td:last-child{border-right:0}tr:last-child td{border-bottom:0}th{background:var(--headbg);font-weight:800;white-space:nowrap}.group{background:#e3e7ec}.sub{background:#f8f9fb}td input{width:100%;min-width:42px;padding:6px;text-align:center;border-radius:5px}.wide{min-width:150px!important;text-align:left!important}.sn{font-weight:800;color:#8d1717}
+.key-score{background:#e8f1ff!important;color:#1555a6;font-weight:900;font-size:12px}
+.key-percentile{background:#f1e9ff!important;color:#6b21a8;font-weight:900;font-size:12px}
+.key-accuracy{background:#e7f8ee!important;color:#087443;font-weight:900;font-size:12px}
+.key-header-score{background:#d8e8ff!important;color:#1555a6!important}
+.key-header-percentile{background:#e7dcff!important;color:#6b21a8!important}
+.key-header-accuracy{background:#d7f1e2!important;color:#087443!important}
+.mock-score-deep{background:#b9d6ff!important;color:#063d83!important;font-weight:950}
+.mock-percentile-deep{background:#d9c1ff!important;color:#4b137f!important;font-weight:950}
+.mock-accuracy-deep{background:#b9edce!important;color:#055c32!important;font-weight:950}
+.subject-strong{background:#b9edce!important;border:2px solid #16834b!important}
+.subject-weak{background:#ffc7c2!important;border:2px solid #b42318!important}
+.analysis-score{background:#b9d6ff!important;color:#063d83!important}
+.analysis-percentile{background:#d9c1ff!important;color:#4b137f!important}
+.analysis-attempt{background:#b9e0ff!important;color:#075985!important}
+.analysis-accuracy{background:#b9edce!important;color:#055c32!important}
+.key-label{font-size:9px;display:block;font-weight:700;opacity:.72;margin-top:2px}
+.stats{display:grid;grid-template-columns:repeat(9,1fr);gap:9px}.stat{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:12px}.stat small{display:block;color:var(--muted);font-size:10px}.stat strong{font-size:20px;display:block;margin-top:3px}.progress{height:6px;background:#edf0f3;border-radius:10px;margin-top:7px;overflow:hidden}.progress i{height:100%;display:block;background:var(--red)}
+.analysis{display:grid;grid-template-columns:1fr 1fr;gap:15px}.panel{border:1px solid var(--line);border-radius:11px;padding:14px}.panel h3{font-size:15px;margin:0 0 8px}.good{border-left:5px solid var(--green)}.weak{border-left:5px solid var(--red)}.zone{padding:8px 0;border-bottom:1px solid #edf0f3}.zone:last-child{border:0}.tag{padding:3px 7px;border-radius:99px;font-size:10px;font-weight:800;float:right}.taggood{background:#dcfce7;color:#166534}.tagbad{background:#fee2e2;color:#991b1b}
+.subjectgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.subject{border:1px solid var(--line);border-radius:10px;padding:12px}.subject h3{margin:0 0 8px}.metric{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #edf0f3;font-size:12px}.metric:last-child{border:0}.metric b{font-size:13px}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:15px}.bars{height:260px;display:flex;align-items:flex-end;gap:9px;border-bottom:1px solid var(--line);padding:10px 8px 0}.barcol{height:100%;flex:1;display:flex;align-items:flex-end;justify-content:center;position:relative}.bar{width:min(38px,80%);background:linear-gradient(#d13b2e,#8d1717);border-radius:5px 5px 0 0;position:relative;min-height:2px}.bar span{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:9px;font-weight:800;margin-bottom:3px}.barlabel{position:absolute;top:calc(100% + 4px);left:50%;transform:translateX(-50%);font-size:9px}.pie{width:205px;height:205px;border-radius:50%;margin:12px auto;position:relative}.pie:after{content:"";position:absolute;inset:48px;background:#fff;border-radius:50%}.legend{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;font-size:11px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}.d1{background:#d13b2e}.d2{background:#2563eb}.d3{background:#16a34a}
+.form{display:grid;grid-template-columns:140px 160px 1fr 110px auto;gap:8px}.form textarea{resize:vertical}.badge{padding:4px 7px;border-radius:99px;font-size:10px;font-weight:800}.high{background:#fee2e2;color:#b42318}.medium{background:#fef3c7;color:#92400e}.low{background:#dcfce7;color:#166534}.reviewed{opacity:.5;text-decoration:line-through}.empty{text-align:center;color:var(--muted);padding:22px}
+.notice{background:#fff8e6;border:1px solid #f2d48b;border-radius:9px;padding:10px;font-size:12px;margin-top:12px}.hidden{display:none!important}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:2px 0 25px}
+@media(max-width:1150px){.stats{grid-template-columns:repeat(5,1fr)}.settings{grid-template-columns:repeat(4,1fr)}.subjectgrid{grid-template-columns:repeat(2,1fr)}.analysis,.charts{grid-template-columns:1fr}.importgrid{grid-template-columns:1fr}}
+@media(max-width:650px){.head{display:block}.actions{margin-top:12px}.stats{grid-template-columns:repeat(2,1fr)}.settings{grid-template-columns:1fr 1fr}.subjectgrid{grid-template-columns:1fr}.form{grid-template-columns:1fr}.detgrid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header><div class="head">
+<div><h1>SSC Mock Master</h1><div class="sub">RBE • Oliveboard • Testbook • The Pundit • 100+ mocks • chronological history • 5-mock intelligence</div></div>
+<div class="actions"><button class="white" onclick="addMock()">＋ Add Mock</button><button class="dark" onclick="toggleTheme()" id="themeBtn">🌙 Dark Mode</button><button class="dark" onclick="document.getElementById('files').click()">📷 Screenshots</button><button class="dark" onclick="exportData()">Export</button><input id="files" type="file" accept="image/*" multiple hidden onchange="processFiles(event)"></div>
+</div></header>
+
+<main>
+<section class="card">
+<div class="headrow"><div><h2>1. Screenshot Import</h2><div class="muted">The importer recognizes multiple names for the same subject: <b>English / English Comprehension</b>, <b>Reasoning / General Intelligence / Logical Reasoning</b>, <b>Maths / Quantitative Aptitude</b>, and <b>GK / General Knowledge / General Awareness</b>. After you provide Oliveboard, Testbook and The Pundit screenshots, their exact layouts can be tuned too.</div></div></div>
+<div id="drop" class="drop" onclick="if(event.target===this||event.target.tagName==='STRONG'||event.target.tagName==='SMALL')document.getElementById('files').click()">
+<strong>📷 Drop one or more mock-result screenshots here</strong><small>Or click to select screenshots. For a folder workflow, use “Select Folder” below.</small><br><br>
+<button class="red" onclick="document.getElementById('files').click();event.stopPropagation()">Select Screenshots</button>
+<input id="folder" type="file" webkitdirectory directory multiple accept="image/*" hidden onchange="processFiles(event)">
+<button class="soft" onclick="document.getElementById('folder').click();event.stopPropagation()">📁 Select Screenshot Folder</button>
+<div id="ocrStatus" style="margin-top:10px;color:#667085;font-size:12px"></div><div id="preview" style="margin-top:12px"></div>
+</div>
+<div class="notice"><b>Subject-name compatibility:</b> English ↔ English Comprehension; Reasoning ↔ General Intelligence ↔ Logical Reasoning; Maths ↔ Quantitative Aptitude; GK ↔ General Knowledge ↔ General Awareness.</div><div class="notice">Browser security does not allow a normal HTML file to continuously watch an arbitrary computer folder. “Select Screenshot Folder” lets you choose a folder and import all screenshots from it in one operation. After importing, you can keep adding new screenshots.</div>
+<div id="importArea" class="importgrid hidden">
+<div class="ocrbox"><b>OCR Text</b><textarea id="ocrText"></textarea></div>
+<div class="ocrbox"><b>Detected Result — verify before saving</b><div id="detected" class="detgrid" style="margin-top:9px"></div><div style="margin-top:10px"><button class="red" onclick="saveOCRDraft()">Save This Mock</button> <button class="soft" onclick="clearImport()">Discard</button></div></div>
+</div>
+</section>
+
+<section class="card">
+<div class="headrow"><div><h2>2. Mock Database — 100+ mocks</h2><div class="muted">Backdated mocks are automatically inserted into chronological order and serial numbers are regenerated.</div></div><div><select id="platformFilter" onchange="renderTable()"><option value="all">All Platforms</option><option>RBE</option><option>Oliveboard</option><option>Testbook</option><option>The Pundit</option></select> <input id="search" style="max-width:210px" placeholder="Search..." oninput="renderTable()"></div></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;font-size:11px;font-weight:800">
+<span style="background:#e8f1ff;color:#1555a6;padding:5px 9px;border-radius:7px">🔵 Score</span>
+<span style="background:#f1e9ff;color:#6b21a8;padding:5px 9px;border-radius:7px">🟣 Percentile</span>
+<span style="background:#e7f8ee;color:#087443;padding:5px 9px;border-radius:7px">🟢 Accuracy</span>
+</div><div class="tablewrap"><table>
+<thead>
+<tr><th rowspan="2">Date</th><th rowspan="2">No.</th><th rowspan="2">Platform</th><th colspan="9" class="group">Complete Test</th><th colspan="4" class="group">Reasoning</th><th colspan="4" class="group">Maths</th><th colspan="4" class="group">English</th><th colspan="4" class="group">GK / GA</th><th rowspan="2">Remarks</th><th rowspan="2">×</th></tr>
+<tr class="sub"><th>C</th><th>I</th><th>U</th><th class="key-header-score">Score</th><th class="key-header-percentile">Percentile</th><th>ASM</th><th class="key-header-accuracy">Accuracy</th><th>Attempt</th><th>Rank</th>
+<th>C</th><th>I</th><th>U</th><th>S</th><th>C</th><th>I</th><th>U</th><th>S</th><th>C</th><th>I</th><th>U</th><th>S</th><th>C</th><th>I</th><th>U</th><th>S</th></tr>
+</thead><tbody id="mockBody"></tbody></table></div>
+<button class="red" style="margin-top:12px" onclick="addMock()">＋ Add Mock Manually</button>
+</section>
+
+<section class="card">
+<div class="headrow"><div><h2>3. 5-Mock Analysis</h2><div class="muted" id="windowText">A new report is generated after every 5 mocks: 5, 10, 15, 20…</div></div><select id="period" onchange="renderAnalysis()"><option value="5">Latest 5</option><option value="10">Latest 10</option><option value="20">Latest 20</option><option value="50">Latest 50</option></select></div>
+<div class="stats">
+<div class="stat analysis-percentile"><small>Avg Percentile</small><strong id="ap">—</strong></div><div class="stat analysis-score"><small>Avg Score</small><strong id="as">—</strong></div><div class="stat"><small>Avg ASM</small><strong id="aasm">—</strong></div><div class="stat analysis-attempt"><small>Attempt Rate</small><strong id="attempt">—</strong><div class="progress"><i id="attemptBar"></i></div></div><div class="stat"><small>Avg Correct</small><strong id="ac">—</strong></div><div class="stat"><small>Avg Incorrect</small><strong id="ai">—</strong></div><div class="stat"><small>Avg Unattempted</small><strong id="au">—</strong></div><div class="stat"><small>Mocks</small><strong id="count">0</strong></div><div class="stat analysis-accuracy"><small>Avg Accuracy</small><strong id="accuracy">—</strong></div>
+</div>
+<div class="analysis" style="margin-top:15px"><div class="panel good"><h3>🟢 Strong Zones</h3><div id="strong">—</div></div><div class="panel weak"><h3>🔴 Weak Zones</h3><div id="weak">—</div></div></div>
+<div style="margin-top:15px"><h3 style="margin:0 0 10px">Subject-wise Analysis</h3><div id="subjects" class="subjectgrid"></div></div>
+<div class="charts" style="margin-top:15px"><div class="panel"><h3>Score Trend</h3><div id="scoreChart" class="bars"></div></div><div class="panel"><h3>Attempt Composition</h3><div id="pieChart"></div></div></div>
+</section>
+
+<section class="card">
+<div class="headrow"><div><h2>4. Mistake & Remember Vault</h2><div class="muted">Keep mistakes, concepts, formulas, facts, vocabulary, shortcuts and recurring traps for later revision.</div></div><select id="filter" onchange="renderNotes()"><option value="all">All</option><option value="pending">Pending</option><option value="reviewed">Reviewed</option></select></div>
+<div class="form"><select id="ntype"><option>Mistake</option><option>Concept</option><option>Formula</option><option>Fact</option><option>Vocabulary</option><option>Shortcut</option><option>Remember</option></select><input id="ntopic" placeholder="Topic / subject"><textarea id="ntext" placeholder="What went wrong / what must be remembered?"></textarea><select id="npriority"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select><button class="red" onclick="addNote()">＋ Save</button></div>
+<div class="tablewrap" style="margin-top:13px"><table style="min-width:850px"><thead><tr><th>✓</th><th>Type</th><th>Topic</th><th>Note</th><th>Priority</th><th>Added</th><th>×</th></tr></thead><tbody id="notesBody"></tbody></table></div>
+</section>
+<footer>Local browser storage • Export backups regularly.</footer>
+</main>
+
+<script>
+const KEY='sscMockMasterV4';
+const SEEDED_DB={"mocks":[{"id":1786891658803,"no":1,"date":"2026-08-03","platform":"RBE","c":"69","i":"1","u":"14","s":"129.5","p":"88.13","asm":"","rank":"3530/29733","rc":"22","ri":"2","ru":"1","rs":"43.00","mc":"15","mi":"2","mu":"8","ms":"29.00","ec":"18","ei":"6","eu":"1","es":"33.00","gc":"14","gi":"7","gu":"4","gs":"24.50","r":"","accuracy":"80.23"},{"id":1786891882666,"no":2,"date":"2026-08-09","platform":"The Pundit","c":"73","i":"19","u":"8","s":"136.5","p":"81.9","asm":"","rank":"4363/24071","rc":"19","ri":"4","ru":"2","rs":"36","mc":"19","mi":"2","mu":"4","ms":"37","ec":"16","ei":"8","eu":"1","es":"28","gc":"19","gi":"5","gu":"1","gs":"35.5","r":"","attemptedTotal":"24","accuracy":"66.67"},{"id":1786888510999,"no":3,"date":"2026-08-10","platform":"RBE","c":"69","i":"13","u":"18","s":"131.5","p":"92.26","asm":"","rank":"2356/30450","rc":"21","ri":"1","ru":"3","rs":"41.50","mc":"14","mi":"0","mu":"11","ms":"28.00","ec":"22","ei":"3","eu":"0","es":"42.50","gc":"12","gi":"9","gu":"4","gs":"19.50","r":"","accuracy":"84.15"},{"id":1786888308505,"no":4,"date":"2026-08-15","platform":"Oliveboard","c":"74","i":"17","u":"9","s":"139.50","p":"77.9","asm":"","rank":"11892","rc":"19","ri":"4","ru":"2","rs":"36.00","mc":"18","mi":"2","mu":"5","ms":"35.00","ec":"21","ei":"4","eu":"0","es":"40.00","gc":"16","gi":"7","gu":"2","gs":"28.50","r":"","attemptedTotal":"91","totalQuestions":"100","accuracy":"81.32"},{"id":1786892396561,"no":5,"date":"2026-08-16","platform":"RBE","c":"79","i":"12","u":"9","s":"152","p":"93.16","asm":"","rank":"1404/20514","rc":"22","ri":"21","ru":"1","rs":"41.50","mc":"20","mi":"19","mu":"1","ms":"37.50","ec":"24","ei":"21","eu":"3","es":"40.50","gc":"25","gi":"18","gu":"7","gs":"32.50","r":""}],"notes":[],"settings":{"pos":2,"neg":0.5}};
+let db=JSON.parse(localStorage.getItem(KEY)||'null')||JSON.parse(JSON.stringify(SEEDED_DB));
+let draft={};
+let cloudReady=false;
+const $=id=>document.getElementById(id), n=x=>Number(x)||0;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+function save(){localStorage.setItem(KEY,JSON.stringify(db))}
+function setCloudStatus(text,ok=true){const el=$('cloudStatus');if(!el)return;el.textContent=(ok?'☁️ ':'⚠️ ')+text;el.style.background=ok?'#ecfdf5':'#fff7ed';el.style.borderColor=ok?'#a7f3d0':'#fed7aa';el.style.color=ok?'#166534':'#9a3412'}
+async function cloudRequest(url,opts={}){const r=await fetch(url,{...opts,headers:{'Content-Type':'application/json',...(opts.headers||{})}});let body={};try{body=await r.json()}catch{};if(!r.ok)throw new Error(body.error||('HTTP '+r.status));return body}
+async function cloudUpsertMock(m){try{await cloudRequest('/api/mocks',{method:'POST',body:JSON.stringify(m)});cloudReady=true;setCloudStatus('Connected • saved to cloud');}catch(e){setCloudStatus('Cloud save failed; local backup is still active',false);console.error(e)}}
+async function cloudDeleteMock(id){try{await cloudRequest('/api/mocks?id='+encodeURIComponent(id),{method:'DELETE'});setCloudStatus('Connected • saved to cloud');}catch(e){setCloudStatus('Cloud delete failed; local backup is still active',false);console.error(e)}}
+async function initCloud(){
+  try{
+    const data=await cloudRequest('/api/mocks');
+    if(Array.isArray(data.mocks)&&data.mocks.length){
+      db.mocks=data.mocks; normalize(); save();
+      cloudReady=true; setCloudStatus('Connected • cloud data loaded'); render();
+    }else{
+      if(!db.mocks.length) db.mocks=JSON.parse(JSON.stringify(SEEDED_DB.mocks||[]));
+      normalize(); save();
+      for(const m of db.mocks) await cloudUpsertMock(m);
+      setCloudStatus('Connected • existing mocks uploaded'); render();
+    }
+  }catch(e){
+    setCloudStatus('Cloud not available yet • using local data',false);
+    console.error(e);
+  }
+}
+function score(m){return n(m.c)*db.settings.pos-n(m.i)*db.settings.neg}
+function acc(m){return n(m.c)+n(m.i)?n(m.c)/(n(m.c)+n(m.i))*100:0}
+function attempt(m){return n(m.c)+n(m.i)+n(m.u)?(n(m.c)+n(m.i))/(n(m.c)+n(m.i)+n(m.u))*100:0}
+function normalize(){db.mocks.sort((a,b)=>{let x=a.date||'9999-12-31',y=b.date||'9999-12-31';return x===y?(a.id||0)-(b.id||0):x.localeCompare(y)});db.mocks.forEach((m,i)=>m.no=i+1)}
+function addMock(){let m={id:Date.now(),no:db.mocks.length+1,date:new Date().toISOString().slice(0,10),platform:'RBE',c:'',i:'',u:'',s:'',p:'',asm:'',rank:'',r:'',rc:'',ri:'',ru:'',rs:'',mc:'',mi:'',mu:'',ms:'',ec:'',ei:'',eu:'',es:'',gc:'',gi:'',gu:'',gs:''};db.mocks.push(m);normalize();save();cloudUpsertMock(m);render();setTimeout(()=>document.querySelector('#mockBody tr:last-child input')?.focus(),30)}
+function upd(id,k,v){let m=db.mocks.find(x=>x.id==id);if(m){m[k]=v;if(k==='date')normalize();save();cloudUpsertMock(m);render()}}
+function delMock(id){db.mocks=db.mocks.filter(x=>x.id!=id);normalize();save();cloudDeleteMock(id);render()}
+function renderTable(){
+ let q=($('search').value||'').toLowerCase(),pf=$('platformFilter').value,a=db.mocks.filter(m=>(pf==='all'||m.platform===pf)&&JSON.stringify(m).toLowerCase().includes(q));
+ $('mockBody').innerHTML=a.length?a.map((m,i)=>`<tr>
+<td><input type="date" value="${esc(m.date)}" onchange="upd(${m.id},'date',this.value)"></td><td class="sn">${m.no||i+1}</td>
+<td><select onchange="upd(${m.id},'platform',this.value)"><option ${m.platform==='RBE'?'selected':''}>RBE</option><option ${m.platform==='Oliveboard'?'selected':''}>Oliveboard</option><option ${m.platform==='Testbook'?'selected':''}>Testbook</option><option ${m.platform==='The Pundit'?'selected':''}>The Pundit</option></select></td>
+<td><input type="number" value="${esc(m.c)}" onchange="upd(${m.id},'c',this.value)"></td><td><input type="number" value="${esc(m.i)}" onchange="upd(${m.id},'i',this.value)"></td><td><input type="number" value="${esc(m.u)}" onchange="upd(${m.id},'u',this.value)"></td><td class="key-score mock-score-deep"><input aria-label="Score" type="number" value="${esc(m.s)}" onchange="upd(${m.id},'s',this.value)"><span class="key-label">SCORE</span></td><td class="key-percentile mock-percentile-deep"><input aria-label="Percentile" type="number" value="${esc(m.p)}" onchange="upd(${m.id},'p',this.value)"><span class="key-label">PERCENTILE</span></td><td><input type="number" value="${esc(m.asm)}" onchange="upd(${m.id},'asm',this.value)"></td><td class="key-accuracy mock-accuracy-deep">${acc(m).toFixed(1)}%<span class="key-label">ACCURACY</span></td><td>${attempt(m).toFixed(1)}%</td><td><input type="text" value="${esc(m.rank)}" onchange="upd(${m.id},'rank',this.value)"></td>
+${[['rc','ri','ru','rs'],['mc','mi','mu','ms'],['ec','ei','eu','es'],['gc','gi','gu','gs']].flat().map(k=>`<td><input type="number" value="${esc(m[k])}" onchange="upd(${m.id},'${k}',this.value)"></td>`).join('')}
+<td><input class="wide" value="${esc(m.r)}" onchange="upd(${m.id},'r',this.value)"></td><td><button class="danger" onclick="delMock(${m.id})">×</button></td></tr>`).join(''):`<tr><td colspan="29" class="empty">No mocks yet.</td></tr>`
+}
+function average(a,k){let v=a.map(m=>Number(String(m[k]??'').replace(/,/g,''))).filter(x=>Number.isFinite(x));return v.length?v.reduce((s,x)=>s+x,0)/v.length:0}
+function sub(a,c,i,u,s){let C=average(a,c),I=average(a,i),U=average(a,u),S=average(a,s),AR=C+I+U?(C+I)/(C+I+U)*100:0,AC=C+I?C/(C+I)*100:0;return{C,I,U,S,AR,AC}}
+function renderAnalysis(){
+ let wanted=n($('period').value)||5, a=db.mocks.slice(-Math.min(wanted,db.mocks.length));$('count').textContent=a.length;
+ if(db.mocks.length<5){['ap','as','aasm','attempt','ac','ai','au','accuracy'].forEach(x=>$(x).textContent='—');$('strong').innerHTML='Complete 5 mocks to activate the report.';$('weak').innerHTML='Complete 5 mocks to activate the report.';$('subjects').innerHTML='<div class="empty">The first detailed report appears after Mock 5.</div>';$('scoreChart').innerHTML='';$('pieChart').innerHTML='';return}
+ let P=average(a,'p'),S=a.reduce((x,m)=>x+(n(m.s)||score(m)),0)/a.length,ASM=average(a,'asm'),C=average(a,'c'),I=average(a,'i'),U=average(a,'u'),AR=C+I+U?(C+I)/(C+I+U)*100:0,ACC=C+I?C/(C+I)*100:0;
+ $('ap').textContent=P.toFixed(2);$('as').textContent=S.toFixed(2);$('aasm').textContent=ASM.toFixed(2);$('attempt').textContent=AR.toFixed(1)+'%';$('attemptBar').style.width=AR+'%';$('ac').textContent=C.toFixed(1);$('ai').textContent=I.toFixed(1);$('au').textContent=U.toFixed(1);$('accuracy').textContent=ACC.toFixed(1)+'%';
+ const defs=[['Reasoning','rc','ri','ru','rs'],['Maths','mc','mi','mu','ms'],['English','ec','ei','eu','es'],['GK / GA','gc','gi','gu','gs']], ss=defs.map(d=>({name:d[0],...sub(a,d[1],d[2],d[3],d[4])}));
+ let available=ss.filter(x=>x.S!==0 || x.C!==0 || x.I!==0 || x.U!==0), sorted=[...available].sort((x,y)=>y.S-x.S);
+ $('strong').innerHTML=sorted.slice(0,2).map(x=>`<div class="zone"><b>${x.name}</b> — ${x.S.toFixed(2)} avg marks <span class="tag taggood">${x.AR.toFixed(0)}% attempt • ${x.AC.toFixed(0)}% accuracy</span><br><span class="muted">Correct ${x.C.toFixed(1)} • Incorrect ${x.I.toFixed(1)} • Unattempted ${x.U.toFixed(1)}</span></div>`).join('');
+ $('weak').innerHTML=sorted.slice(-2).reverse().map(x=>`<div class="zone"><b>${x.name}</b> — ${x.S.toFixed(2)} avg marks <span class="tag tagbad">${x.AR.toFixed(0)}% attempt • ${x.AC.toFixed(0)}% accuracy</span><br><span class="muted">Correct ${x.C.toFixed(1)} • Incorrect ${x.I.toFixed(1)} • Unattempted ${x.U.toFixed(1)}</span></div>`).join('');
+ let valsS=available.map(x=>x.S),bestS=valsS.length?Math.max(...valsS):0,worstS=valsS.length?Math.min(...valsS):0;
+ $('subjects').innerHTML=ss.map(x=>{let cls=x.S===bestS?'subject-strong':x.S===worstS?'subject-weak':'';return `<div class="subject ${cls}"><h3>${x.name} ${x.S===bestS?'🟢 STRONGEST':x.S===worstS?'🔴 WEAKEST':''}</h3><div class="metric"><span>Average Marks</span><b>${x.S.toFixed(2)}</b></div><div class="metric"><span>Average Correct</span><b>${x.C.toFixed(1)}</b></div><div class="metric"><span>Average Incorrect</span><b>${x.I.toFixed(1)}</b></div><div class="metric"><span>Average Unattempted</span><b>${x.U.toFixed(1)}</b></div><div class="metric"><span>Attempt Rate</span><b>${x.AR.toFixed(1)}%</b></div><div class="metric"><span>Accuracy</span><b>${x.AC.toFixed(1)}%</b></div></div>`}).join('');
+ let vals=a.map(m=>n(m.s)||score(m)),mx=Math.max(...vals,1);$('scoreChart').innerHTML=vals.map((v,j)=>`<div class="barcol"><div class="bar" style="height:${Math.max(2,v/mx*90)}%"><span>${v.toFixed(1)}</span><div class="barlabel">M${a[j].no}</div></div></div>`).join('');
+ let total=C+I+U||1,p1=C/total*100,p2=I/total*100,p3=U/total*100;$('pieChart').innerHTML=`<div class="pie" style="background:conic-gradient(#d13b2e 0 ${p1}%,#2563eb ${p1}% ${p1+p2}%,#16a34a ${p1+p2}% 100%)"></div><div class="legend"><span><i class="dot d1"></i>Correct ${p1.toFixed(1)}%</span><span><i class="dot d2"></i>Incorrect ${p2.toFixed(1)}%</span><span><i class="dot d3"></i>Unattempt ${p3.toFixed(1)}%</span></div>`;
+}
+function addNote(){let t=$('ntext').value.trim();if(!t){alert('Write the mistake first.');return}db.notes.unshift({id:Date.now(),type:$('ntype').value,topic:$('ntopic').value.trim(),text:t,priority:$('npriority').value,reviewed:false,date:new Date().toLocaleDateString('en-IN')});$('ntext').value='';$('ntopic').value='';save();renderNotes()}
+function toggleNote(id){let x=db.notes.find(n=>n.id==id);x.reviewed=!x.reviewed;save();renderNotes()}
+function delNote(id){db.notes=db.notes.filter(n=>n.id!=id);save();renderNotes()}
+function renderNotes(){let f=$('filter').value,a=db.notes.filter(x=>f==='all'||(f==='pending'&&!x.reviewed)||(f==='reviewed'&&x.reviewed));$('notesBody').innerHTML=a.length?a.map(x=>`<tr class="${x.reviewed?'reviewed':''}"><td><input type="checkbox" ${x.reviewed?'checked':''} onchange="toggleNote(${x.id})"></td><td>${esc(x.type)}</td><td>${esc(x.topic)}</td><td style="text-align:left">${esc(x.text)}</td><td><span class="badge ${x.priority}">${x.priority}</span></td><td>${x.date}</td><td><button class="danger" onclick="delNote(${x.id})">×</button></td></tr>`).join(''):`<tr><td colspan="7" class="empty">No notes in this view.</td></tr>`}
+function applyTheme(){
+ const dark=localStorage.getItem('sscTheme')==='dark';
+ document.body.classList.toggle('dark-mode',dark);
+ const b=$('themeBtn'); if(b)b.textContent=dark?'☀️ Light Mode':'🌙 Dark Mode';
+}
+function toggleTheme(){
+ const dark=!document.body.classList.contains('dark-mode');
+ document.body.classList.toggle('dark-mode',dark);
+ localStorage.setItem('sscTheme',dark?'dark':'light');
+ const b=$('themeBtn'); if(b)b.textContent=dark?'☀️ Light Mode':'🌙 Dark Mode';
+}
+function render(){normalize();renderTable();renderAnalysis();renderNotes()}
+function exportData(){let b=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='ssc-mock-master-backup.json';a.click()}
+async function processFiles(e){
+ let files=[...e.target.files].filter(f=>f.type.startsWith('image/'));
+ if(!files.length){$('ocrStatus').textContent='No image file was selected.';return}
+ $('ocrStatus').textContent=`Selected ${files.length} screenshot${files.length>1?'s':''}. Reading the first one…`;
+ await processImage({target:{files:[files[0]]}});
+ if(files.length>1) $('ocrStatus').textContent += ` After saving this result, select the next screenshot.`;
+}
+const drop=$('drop');['dragenter','dragover'].forEach(x=>drop.addEventListener(x,e=>{e.preventDefault();drop.classList.add('drag')}));['dragleave','drop'].forEach(x=>drop.addEventListener(x,e=>{e.preventDefault();drop.classList.remove('drag')}));drop.addEventListener('drop',e=>{let f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))processImage({target:{files:[f]}})});
+async function loadTesseract(){
+  if(window.Tesseract) return true;
+  $('ocrStatus').textContent='Loading OCR engine…';
+  const urls=[
+    'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js',
+    'https://unpkg.com/tesseract.js@5/dist/tesseract.min.js'
+  ];
+  for(const url of urls){
+    try{
+      await new Promise((resolve,reject)=>{
+        const old=document.querySelector('script[data-ocr]');
+        if(old) old.remove();
+        const s=document.createElement('script');
+        s.src=url;s.async=true;s.dataset.ocr='1';
+        s.onload=()=>window.Tesseract?resolve():reject(new Error('OCR library not exposed'));
+        s.onerror=()=>reject(new Error('Could not load OCR library'));
+        document.head.appendChild(s);
+      });
+      if(window.Tesseract) return true;
+    }catch(e){ console.warn('OCR loader failed:',url,e); }
+  }
+  return false;
+}
+async function preprocessImage(file,mode=0){
+ return new Promise((resolve,reject)=>{
+  const im=new Image();im.onload=()=>{
+   const scale=mode===2?3:2;
+   const c=document.createElement('canvas');c.width=im.naturalWidth*scale;c.height=im.naturalHeight*scale;
+   const ctx=c.getContext('2d');ctx.drawImage(im,0,0,c.width,c.height);
+   if(mode!==0){
+    const d=ctx.getImageData(0,0,c.width,c.height),a=d.data;
+    for(let i=0;i<a.length;i+=4){
+     let g=(a[i]*.299+a[i+1]*.587+a[i+2]*.114);
+     if(mode===2)g=g<185?0:255;
+     a[i]=a[i+1]=a[i+2]=g;
+    }
+    ctx.putImageData(d,0,0);
+   }
+   c.toBlob(b=>resolve(b),'image/png',1);
+  };im.onerror=reject;im.src=URL.createObjectURL(file);
+ });
+}
+async function ocrPass(blob,mode){
+ const r=await Tesseract.recognize(blob,'eng',{logger:m=>{
+   if(m.status)$('ocrStatus').textContent='OCR '+(mode+1)+': '+m.status+(m.progress!=null?' '+Math.round(m.progress*100)+'%':'');
+ }});
+ return r.data.text||''
+}
+async function processImage(e){
+ let f=e.target.files&&e.target.files[0];if(!f)return;
+ $('importArea').classList.remove('hidden');$('ocrStatus').textContent='Image selected: '+f.name+' — preparing OCR…';
+ $('preview').innerHTML='';
+ const img=document.createElement('img');img.src=URL.createObjectURL(f);img.style.maxWidth='260px';img.style.maxHeight='260px';img.style.borderRadius='8px';$('preview').appendChild(img);
+ try{
+  const ok=await loadTesseract();if(!ok){$('ocrStatus').innerHTML='<b style="color:#b42318">OCR engine could not be loaded.</b> The image was selected, but OCR needs internet access to load the engine.';return}
+  const blobs=[await preprocessImage(f,0),await preprocessImage(f,1),await preprocessImage(f,2)];
+  let texts=[];
+  for(let j=0;j<blobs.length;j++){try{texts.push(await ocrPass(blobs[j],j))}catch(err){console.warn('OCR pass failed',j,err)}}
+  let combined=texts.join('\n');
+  // Prefer the pass containing the most platform/section keywords.
+  texts.sort((a,b)=>{
+    const score=t=>((t.match(/General Intelligence|General Awareness|Quantitative Aptitude|English Comprehension|Section wise performance|Total Score|Your Score/gi)||[]).length*5)+(t.match(/\d+(?:\.\d+)?/g)||[]).length;
+    return score(b)-score(a);
+  });
+  const best=texts[0]||combined;
+  $('ocrText').value=best;
+  draft=parseOCR(best);
+  showDetected();
+  $('ocrStatus').textContent='OCR complete using multiple image passes. Verify the detected values, especially section values, before saving.';
+ }catch(err){console.error(err);$('ocrStatus').innerHTML='<b style="color:#b42318">OCR failed.</b> The screenshot was selected, but OCR could not finish. Try again with a full, clear result screenshot.'}
+}
+function firstNum(re,t){let m=t.match(re);return m?m[1]:''}
+function num(v){let x=parseFloat(String(v).replace(/,/g,''));return Number.isFinite(x)?x:''}
+function setIf(x,k,v){if(v!==''&&v!==null&&v!==undefined)x[k]=String(v)}
+function inferSection(x,key,score,attempted,correct,incorrect,unattempted,accuracy){
+  let a=String(attempted||'').match(/(\d+)\s*\/\s*(\d+)/);
+  let att=a?num(a[1]):num(attempted), total=a?num(a[2]):'';
+  let c=num(correct), i=num(incorrect), u=num(unattempted), ac=num(accuracy);
+  if(c===''&&i!=='')c=att-i;
+  if(i===''&&c!=='')i=att-c;
+  if(c===''&&ac!==''&&att!==''){c=Math.round(att*ac/100);i=att-c}
+  if(u===''&&total!==''&&att!=='')u=total-att;
+  setIf(x,key+'s',score);setIf(x,key+'c',c);setIf(x,key+'i',i);setIf(x,key+'u',u);
+}
+function parseRBE(t,x){
+ x.platform='RBE';
+ setIf(x,'s',firstNum(/your\s*score\s*[:\-]?\s*(-?\d+(?:\.\d+)?)\s*\/?/i,t));
+ setIf(x,'p',firstNum(/percentile\s*[:\-]?\s*(\d+(?:\.\d+)?)/i,t));
+ setIf(x,'c',firstNum(/\bcorrect\s*[:\-]?\s*(\d+(?:\.\d+)?)/i,t));
+ setIf(x,'i',firstNum(/\bincorrect\s*[:\-]?\s*(\d+(?:\.\d+)?)/i,t));
+ setIf(x,'u',firstNum(/\bunattempted\s*[:\-]?\s*(\d+(?:\.\d+)?)/i,t));
+ setIf(x,'asm',firstNum(/(?:average\s*score|avg\.?\s*score|asm)\s*[:\-]?\s*(-?\d+(?:\.\d+)?)/i,t));
+ setIf(x,'rank',firstNum(/rank\s*[:\-]?\s*([0-9,]+\s*\/\s*[0-9,]+)/i,t));
+ const rows=[
+  ['r',/General Intelligence and Reasoning\s+([0-9.]+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/i],
+  ['g',/General Awareness\s+([0-9.]+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/i],
+  ['m',/Quantitative Aptitude\s+([0-9.]+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/i],
+  ['e',/English Comprehension\s+([0-9.]+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/i]
+ ];
+ rows.forEach(([k,re])=>{let z=t.match(re);if(z)inferSection(x,k,z[1],z[2],z[3],z[4],z[5],'')});
+}
+function parseOlive(t,x){
+ x.platform='Oliveboard';
+ let s=t.match(/(?:Total Score|Score)\s*[:\-]?\s*(-?\d+(?:\.\d+)?)\s*\/\s*\d+/i);setIf(x,'s',s?s[1]:'');
+ let rank=t.match(/Rank\s*[:\-]?\s*([0-9,]+(?:\s*\/\s*[0-9,]+)?)/i);setIf(x,'rank',rank?rank[1]:'');
+ let tot=t.match(/Total\s+(\d+)\s*\/\s*(\d+)\s+(\d+)\s*\/\s*(\d+)\s+(-?\d+(?:\.\d+)?)\s+([0-9,]+)/i);
+ if(tot){setIf(x,'c',tot[3]);setIf(x,'i',tot[4]);setIf(x,'u',num(tot[2])-num(tot[1]));}
+ let rows=[
+  ['r',/General Intelligence(?: and Reasoning)?\s+(\d+\s*\/\s*\d+)\s+(\d+)\s*\/\s*(\d+)\s+(-?\d+(?:\.\d+)?)/i],
+  ['g',/General Awareness\s+(\d+\s*\/\s*\d+)\s+(\d+)\s*\/\s*(\d+)\s+(-?\d+(?:\.\d+)?)/i],
+  ['m',/Quantitative Aptitude\s+(\d+\s*\/\s*\d+)\s+(\d+)\s*\/\s*(\d+)\s+(-?\d+(?:\.\d+)?)/i],
+  ['e',/English Comprehension\s+(\d+\s*\/\s*\d+)\s+(\d+)\s*\/\s*(\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)/i]
+ ];
+ rows.forEach(([k,re])=>{let z=t.match(re);if(z)inferSection(x,k,z[4],z[1],z[2],z[3],'','')});
+ // Oliveboard has total percentile in the Total row in the supplied screenshot.
+ let pm=t.match(/Total[\s\S]{0,160}?(\d+(?:\.\d+)?)\s+(?:200\.00\/200|200\/200)/i);
+ if(pm&&num(pm[1])<=100)setIf(x,'p',pm[1]);
+}
+function parsePundit(t,x){
+ x.platform='The Pundit';
+ let s=t.match(/(-?\d+(?:\.\d+)?)\s*\/\s*200\s*(?:Score)?/i);setIf(x,'s',s?s[1]:'');
+ let p=t.match(/(?:Percentile\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*%|((?:\d+(?:\.\d+)?))\s*%\s*Percentile)/i);setIf(x,'p',p?(p[1]||p[2]):'');
+ let ar=t.match(/(?:Attempted\s*[:\-]?\s*(\d+)\s*\/\s*100|(\d+)\s*\/\s*100\s*(?:Attempted)?)/i),ac=t.match(/(?:Accuracy\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*%|(\d+(?:\.\d+)?)\s*%\s*Accuracy)/i);
+ if(ar){let att=num(ar[1]||ar[2]);if(ac){let accv=num(ac[1]||ac[2]);let c=Math.round(att*accv/100);setIf(x,'c',c);setIf(x,'i',att-c)}setIf(x,'u',100-att)}
+ let r=t.match(/(\d+)\s*\/\s*(\d+)\s*(?:Rank)?/i);setIf(x,'rank',r?r[1]+'/'+r[2]:'');
+ const rows=[
+  ['e',/English Comprehension\s+Score\s+(-?\d+(?:\.\d+)?)\s*\/\s*50\s+Attempted\s+(\d+)\s*\/\s*25[\s\S]{0,100}?Accuracy\s+(\d+(?:\.\d+)?)\s*%/i],
+  ['r',/LOGICAL REASONING\s+Score\s+(-?\d+(?:\.\d+)?)\s*\/\s*50\s+Attempted\s+(\d+)\s*\/\s*25[\s\S]{0,100}?Accuracy\s+(\d+(?:\.\d+)?)\s*%/i],
+  ['g',/General Awareness\s+Score\s+(-?\d+(?:\.\d+)?)\s*\/\s*50\s+Attempted\s+(\d+)\s*\/\s*25[\s\S]{0,100}?Accuracy\s+(\d+(?:\.\d+)?)\s*%/i],
+  ['m',/Quantitative Aptitude\s+Score\s+(-?\d+(?:\.\d+)?)\s*\/\s*50\s+Attempted\s+(\d+)\s*\/\s*25[\s\S]{0,100}?Accuracy\s+(\d+(?:\.\d+)?)\s*%/i]
+ ];
+ rows.forEach(([k,re])=>{let z=t.match(re);if(z)inferSection(x,k,z[1],z[2],'','','',z[3])});
+}
+function parseGeneric(t,x){
+ x.platform=/testbook/i.test(t)?'Testbook':'';
+ let s=t.match(/(?:your\s*score|total\s*score|score)\s*[:\-]?\s*(-?\d+(?:\.\d+)?)\s*(?:\/\s*\d+)?/i);setIf(x,'s',s?s[1]:'');
+ let p=t.match(/percentile\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*%?/i);setIf(x,'p',p?p[1]:'');
+ let a=t.match(/(?:attempted)\s*[:\-]?\s*(\d+)\s*\/\s*(\d+)/i),ac=t.match(/accuracy\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*%/i);
+ let c=t.match(/correct\s*[:\-]?\s*(\d+)/i),i=t.match(/(?:incorrect|wrong)\s*[:\-]?\s*(\d+)/i),u=t.match(/unattempted\s*[:\-]?\s*(\d+)/i);
+ if(c)setIf(x,'c',c[1]);if(i)setIf(x,'i',i[1]);if(u)setIf(x,'u',u[1]);
+ if(a){let att=num(a[1]),total=num(a[2]);if(x.c===''&&x.i===''&&ac){x.c=Math.round(att*num(ac[1])/100);x.i=att-x.c}if(x.u==='')x.u=total-att}
+}
+function cleanOCRText(t){
+  return t.replace(/\u00a0/g,' ')
+          .replace(/[|]/g,' ')
+          .replace(/[ \t]+/g,' ')
+          .replace(/\r/g,'');
+}
+function numFrom(s){
+  if(s==null)return '';
+  const m=String(s).replace(/,/g,'').match(/-?\d+(?:\.\d+)?/);
+  return m?m[0]:'';
+}
+function firstMatch(re,t){
+  const m=t.match(re);
+  return m?m[1]:'';
+}
+function findNear(labelRe, text, windowSize=420){
+  const m=labelRe.exec(text);
+  if(!m)return '';
+  return text.slice(m.index, Math.min(text.length,m.index+windowSize));
+}
+function extractSectionFromText(text, aliases, maxQ){
+  // Handles:
+  // 1) RBE: Score, Attempted, Correct, Incorrect, Unattempted
+  // 2) The Pundit: Score, Attempted, Accuracy
+  // 3) Oliveboard-like: Attempted, C/W, Score, Percentile
+  const alias = '(?:' + aliases.join('|') + ')';
+  const near = findNear(new RegExp(alias,'i'),text,520);
+  if(!near)return null;
+
+  let out={score:'',attempted:'',correct:'',incorrect:'',unattempted:'',accuracy:''};
+
+  // Explicit labelled values (most reliable)
+  out.score = firstMatch(/(?:score|marks)\s*[:\-]?\s*(-?\d+(?:\.\d+)?)/i,near);
+  out.attempted = firstMatch(/(?:attempted)\s*[:\-]?\s*(\d+)(?:\s*\/\s*\d+)?/i,near);
+  out.correct = firstMatch(/(?:correct)\s*[:\-]?\s*(\d+)/i,near);
+  out.incorrect = firstMatch(/(?:incorrect|wrong)\s*[:\-]?\s*(\d+)/i,near);
+  out.unattempted = firstMatch(/(?:unattempted|not attempted)\s*[:\-]?\s*(\d+)/i,near);
+  out.accuracy = firstMatch(/(?:accuracy)\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*%?/i,near);
+
+  // C/W notation: "19/4" or "19 / 4"
+  if(!out.correct || !out.incorrect){
+    const cw=near.match(/(?:C\s*\/\s*W|C\/W)\s*[:\-]?\s*(\d+)\s*\/\s*(\d+)/i);
+    if(cw){out.correct=cw[1];out.incorrect=cw[2];}
+  }
+
+  // Table-style fallback. Get the first useful sequence after the section name.
+  // For Pundit cards: Score -> Attempted -> Time -> Accuracy.
+  if(!out.score || !out.attempted || !out.accuracy){
+    const nums=[...near.matchAll(/-?\d+(?:\.\d+)?/g)].map(m=>m[0]);
+    // Ignore obvious rank/phone-like values; use values compatible with a section.
+    const candidates=nums.filter(x=>{
+      const v=Number(x);
+      return Number.isFinite(v) && v>=0 && v<=200;
+    });
+    if(!out.score && candidates.length)out.score=candidates[0];
+    if(!out.attempted && candidates.length>1)out.attempted=candidates[1];
+    if(!out.accuracy){
+      const pct=near.match(/(\d+(?:\.\d+)?)\s*%/);
+      if(pct)out.accuracy=pct[1];
+    }
+  }
+
+  // If accuracy is present but C/I aren't, derive C/I from attempted.
+  if(out.attempted && out.accuracy && (!out.correct || !out.incorrect)){
+    const A=Number(out.attempted), acc=Number(out.accuracy)/100;
+    let C=Math.round(A*acc), I=A-C;
+    out.correct=String(C); out.incorrect=String(I);
+  }
+
+  // If attempted and max question count are known, derive U.
+  if(out.attempted && maxQ!=null && !out.unattempted){
+    const U=Math.max(0,Number(maxQ)-Number(out.attempted));
+    out.unattempted=String(U);
+  }
+
+  return out;
+}
+function detectPlatform(t){
+  if(/the\s*pundit|thepundits|pundits/i.test(t))return 'The Pundit';
+  if(/oliveboard/i.test(t))return 'Oliveboard';
+  if(/testbook/i.test(t))return 'Testbook';
+  if(/\brbe\b|your score|sectional summary/i.test(t))return 'RBE';
+  return 'RBE';
+}
+function parseOCR(t){
+  t=cleanOCRText(t);
+  let x={platform:detectPlatform(t),date:'',c:'',i:'',u:'',s:'',p:'',asm:'',rank:'',
+         rc:'',ri:'',ru:'',rs:'',mc:'',mi:'',mu:'',ms:'',ec:'',ei:'',eu:'',es:'',
+         gc:'',gi:'',gu:'',gs:'',r:''};
+
+  // Date: supports "Sun, 16 Aug", "16 Aug 2026", "16/08/2026", etc.
+  const dm=t.match(/\b(\d{1,2})[\/\-](\d{1,2})[\/\-](20\d{2})\b/);
+  if(dm)x.date=`${dm[3]}-${String(dm[2]).padStart(2,'0')}-${String(dm[1]).padStart(2,'0')}`;
+  else{
+    const dm2=t.match(/\b(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s*(20\d{2})?\b/i);
+    if(dm2){
+      const months={jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12'};
+      x.date=`${dm2[3]||new Date().getFullYear()}-${months[dm2[2].slice(0,3).toLowerCase()]}-${String(dm2[1]).padStart(2,'0')}`;
+    }
+  }
+
+  // Overall metrics — tolerant of labels used by all platforms.
+  x.s=firstMatch(/(?:your\s+score|total\s+score|score|marks)\s*[:\-]?\s*(-?\d+(?:\.\d+)?)\s*(?:\/\s*\d+)?/i,t);
+  x.p=firstMatch(/(?:percentile)\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*%?/i,t);
+  x.c=firstMatch(/(?:correct)\s*[:\-]?\s*(\d+)/i,t);
+  x.i=firstMatch(/(?:incorrect|wrong)\s*[:\-]?\s*(\d+)/i,t);
+  x.u=firstMatch(/(?:unattempted|not attempted)\s*[:\-]?\s*(\d+)/i,t);
+  x.asm=firstMatch(/(?:average score|avg(?:\.|\s)*score|asm)\s*[:\-]?\s*(-?\d+(?:\.\d+)?)/i,t);
+  x.rank=firstMatch(/rank\s*[:\-]?\s*([0-9,]+(?:\s*\/\s*[0-9,]+)?)/i,t);
+
+  // The Pundit overall: attempted + accuracy are visible; derive C/I/U.
+  const overallAttempt=firstMatch(/(?:attempted)\s*[:\-]?\s*(\d+)\s*(?:\/\s*(\d+))?/i,t);
+  const overallAcc=firstMatch(/(?:accuracy)\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*%/i,t);
+  if((!x.c||!x.i) && overallAttempt && overallAcc){
+    const A=Number(overallAttempt), C=Math.round(A*Number(overallAcc)/100);
+    x.c=String(C); x.i=String(A-C);
+  }
+  if(!x.u && overallAttempt){
+    // Most SSC CGL/CHSL-style mocks shown here have 100 questions.
+    const total=firstMatch(/(?:attempted)\s*[:\-]?\s*\d+\s*\/\s*(\d+)/i,t);
+    if(total)x.u=String(Math.max(0,Number(total)-Number(overallAttempt)));
+  }
+
+  // Alias families:
+  // English = English Comprehension / English Language
+  // Reasoning = General Intelligence / General Intelligence and Reasoning / Logical Reasoning
+  // Maths = Quantitative Aptitude / Quantitative Ability / Mathematics
+  // GK = General Awareness / General Knowledge / GA
+  const sections=[
+    ['r',['general intelligence and reasoning','general intelligence','logical reasoning','reasoning'],25],
+    ['g',['general awareness','general knowledge','gk','ga'],25],
+    ['m',['quantitative aptitude','quantitative ability','quantitative mathematics','mathematics','maths','math'],25],
+    ['e',['english comprehension','english language','english'],25]
+  ];
+
+  for(const [key,aliases,maxQ] of sections){
+    const d=extractSectionFromText(t,aliases,maxQ);
+    if(!d)continue;
+    x[key+'s']=d.score||'';
+    x[key+'c']=d.correct||'';
+    x[key+'i']=d.incorrect||'';
+    x[key+'u']=d.unattempted||'';
+
+    // If OCR finds only attempted and score, but no accuracy, use C/W if available.
+    // Never invent C/I from score alone.
+  }
+
+  // If explicit overall C/I/U aren't present, sum the four section values.
+  const keys=['r','m','e','g'];
+  if(!x.c && keys.every(k=>x[k+'c']!==''))
+    x.c=String(keys.reduce((s,k)=>s+Number(x[k+'c']),0));
+  if(!x.i && keys.every(k=>x[k+'i']!==''))
+    x.i=String(keys.reduce((s,k)=>s+Number(x[k+'i']),0));
+  if(!x.u && keys.every(k=>x[k+'u']!==''))
+    x.u=String(keys.reduce((s,k)=>s+Number(x[k+'u']),0));
+
+  // RBE sometimes gives subject score but labels are separated by OCR.
+  // Do not overwrite detected values; user can verify them in the import panel.
+  return x;
+}
+function showDetected(){
+ const labels=[['platform','Platform'],['date','Date'],['c','Overall Correct'],['i','Overall Incorrect'],['u','Overall Unattempted'],['s','Overall Score'],['p','Percentile'],['asm','ASM'],['rank','Rank'],
+ ['rc','Reasoning C'],['ri','Reasoning I'],['ru','Reasoning U'],['rs','Reasoning S'],['mc','Maths C'],['mi','Maths I'],['mu','Maths U'],['ms','Maths S'],['ec','English C'],['ei','English I'],['eu','English U'],['es','English S'],['gc','GK/GA C'],['gi','GK/GA I'],['gu','GK/GA U'],['gs','GK/GA S']];
+ $('detected').innerHTML=labels.map(([k,l])=>`<label>${l}<input id="d_${k}" value="${esc(draft[k]||'')}"></label>`).join('');
+}
+function saveOCRDraft(){
+ let m={id:Date.now(),no:db.mocks.length+1,date:new Date().toISOString().slice(0,10),...draft};
+ Object.keys(m).forEach(k=>{let el=$('d_'+k);if(el)m[k]=el.value});
+ db.mocks.push(m);normalize();save();cloudUpsertMock(m);render();$('ocrStatus').textContent=`Saved as Mock ${m.no}. Chronological order has been updated.`;
+}
+function clearImport(){$('importArea').classList.add('hidden');$('ocrText').value='';$('detected').innerHTML='';draft={}}
+applyTheme();
+render();
+initCloud();
+</script>
+</body>
+</html>
